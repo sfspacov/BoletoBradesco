@@ -16,3 +16,5 @@ WebApi que faz integração com Servidores do Bradesco para gerar boleto bancár
 		<br><b>Obs:</b> Se você está utilizando o Web App do Azure, futuramente irei fazer uma implementação salvando o Log no Blob.
 	</li>
 </ul>
+<br><h2>RODANDO O SISTEMA:</h2>
+Para rodar o sistema basta definir o projeto <b>Boleto.WebApi</b> como <i><b>Set as StartUp Project</b></i>
