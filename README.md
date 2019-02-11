@@ -1,4 +1,4 @@
-# BoletoBradescoDotNetFramework
+# Geração de Boletos Bancários do Bradesco usando .Net Framework 4.5
 WebApi que faz integração com Servidores do Bradesco para gerar boleto bancário para a carteira 26
 <br><h2>CONFIGURAÇÕES:</h2>
 <ul>
