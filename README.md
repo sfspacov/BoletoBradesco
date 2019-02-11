@@ -18,7 +18,7 @@ WebApi que faz integração com Servidores do Bradesco para gerar boleto bancár
 </ul>
 <br><h2>RODANDO O SISTEMA:</h2>
 Para rodar o sistema basta definir o projeto <b>Boleto.WebApi</b> como <i><b>Set as StartUp Project</b></i>
-<br><h2>HOMOLOGAÇÃO</h2>
+<br><h2>DÚVIDAS E HOMOLOGAÇÃO</h2>
 <img src="https://raw.githubusercontent.com/sfspacov/BoletoBradescoDotNetFramework/master/docs/homologacao.PNG" />
 <br><h2>DOCUMENTAÇÃO OFICIAL DO BRADESCO:</h2>
 https://github.com/sfspacov/BoletoBradescoDotNetFramework/blob/master/docs/Manual_BoletoBancario.pdf
