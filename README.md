@@ -9,7 +9,7 @@ WebApi que faz integração com Servidores do Bradesco para gerar boleto bancár
 		Nos arquivos "<b>/Boleto.WebApi/Web.config</b>" e "<b>/Boleto.Tests/App.config</b>" alterar:<br>
 		- ConnectionString "<b>Entities</b>" para apontar para sua base de dados.<br>
 		- As chaves "<b>MerchantId</b>" e "<b>ChaveSeguranca</b>" com os valores fornecidos pelo Bradesco tanto para Homol quanto para Produção.<br>
-		- A chave "<b>LogFolder</b>" para apontar para um diretório que você possui permissão para escrita no servidor.<br>	
+		- A chave "<b>LogFolder</b>" deve apontar para um diretório que você possui permissão para escrita no servidor.<br>	
 		<br><b>Obs:</b> Se você está utilizando o Web App do Azure, futuramente irei fazer uma implementação salvando o Log no Blob.
 	</li>	
 </ul>
