@@ -178,6 +178,7 @@ namespace Boleto.Application.Bradesco
             requisicao.boleto.carteira = "26";
             requisicao.boleto.nosso_numero = requisicao.pedido.numero.PadRight(11, '0');
             requisicao.boleto.data_emissao = DateTime.Now.ToString("yyyy-MM-dd");
+            requisicao.boleto.data_vencimento = requisicao.boleto.data_vencimento ?? DateTime.Now.AddDays(3).ToString("yyyy-MM-dd");
             requisicao.boleto.tipo_renderizacao = "2";
 
             requisicao.boleto.instrucoes = new Instrucoes
@@ -185,7 +186,7 @@ namespace Boleto.Application.Bradesco
                 instrucao_linha_1 = "Não receber valor diferente do impresso em Valor documento.",
                 instrucao_linha_2 = "­Caro Usuário:",
                 instrucao_linha_3 = "Boleto sujeito às normas vigentes de compensação bancária.",
-                instrucao_linha_4 = "Produto comprado: " + requisicao.pedido.descricao
+                instrucao_linha_4 = requisicao.pedido.descricao
             };
 
             requisicao.boleto.registro.controle_participante = "Segurança arquivo remessa";

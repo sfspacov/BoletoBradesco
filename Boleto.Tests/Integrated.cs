@@ -87,9 +87,6 @@ namespace LevelUp.Boleto.Test
         public void Generate_RequestOk_ReturnReposta()
         {
             var requisicao = FakeRequisicao();
-            var rnd = new Random();
-            var myRandomNo = rnd.Next(10000000, 99999999);
-            requisicao.pedido.numero = myRandomNo.ToString();
             var result = _bradescoApplication.Generate(requisicao);
             Assert.AreEqual(result.status.codigo, "0");
         }
@@ -106,9 +103,9 @@ namespace LevelUp.Boleto.Test
             {
                 pedido = new Pedido
                 {
-                    numero = "74342844",
-                    descricao = "GTA V",
-                    valor = "2500"
+                    numero = "74976086",
+                    descricao = "Doação",
+                    valor = "5000"
                 },
                 comprador = new Comprador
                 {
@@ -128,7 +125,8 @@ namespace LevelUp.Boleto.Test
                 },
                 boleto = new BoletoRequest()
                 {
-                    valor_titulo = "1990",
+                    beneficiario = "ONG Oncoamigo",
+                    valor_titulo = "5000",
                     registro = new Registro()
                 },
             };
