@@ -1,4 +1,4 @@
-﻿namespace Boleto.Infra.DTO
+﻿namespace Boleto.Domain.Entidades
 {
     public class BoletoResponse
     {

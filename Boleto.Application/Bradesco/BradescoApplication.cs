@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
-using Boleto.Application.Model;
 using Boleto.Domain;
 using Boleto.Infra;
 using Newtonsoft.Json;
-using Boleto.Infra.DTO;
+using Boleto.Domain.Application;
+using Boleto.Domain.Entidades;
 
 namespace Boleto.Application.Bradesco
 {
-    public class BradescoApplication
+    public class BradescoApplication : IBradescoApplication
     {
         #region Private Attributes
-        private readonly HttpRequest _httpRequest = new HttpRequest();
-        private readonly Entities _entities = new Entities();
+        private readonly IEntities _entities;
+        private readonly IHttpRequest _httpRequest;
         #endregion
+
+        public BradescoApplication()
+        {
+            _entities = new Entities();
+            _httpRequest = new HttpRequest();
+        }
 
         #region Public Methods
         public string GetUrlBoleto(string orderId)
@@ -65,7 +71,7 @@ namespace Boleto.Application.Bradesco
                     return false;
                 }
 
-                var result = _entities.BradescoIntegration.Any(x => x.Token == token && x.OrderId == numero_pedido);
+                var result = _entities.BradescoIntegration.Any(x => x.OrderId == numero_pedido && x.Token == token);
 
                 logs.AppendLine(!result ? "ERRO! Requisição inválida!" : "Requisição válida!");
 
@@ -168,7 +174,7 @@ namespace Boleto.Application.Bradesco
             requisicao.token_request_confirmacao_pagamento = Guid.NewGuid().ToString();
             requisicao.meio_pagamento = "300";
 
-            requisicao.boleto.beneficiario = "NOME DA SUA EMPRESA";
+            requisicao.boleto.beneficiario = requisicao.boleto.beneficiario ?? "NOME DA SUA EMPRESA";
             requisicao.boleto.carteira = "26";
             requisicao.boleto.nosso_numero = requisicao.pedido.numero.PadRight(11, '0');
             requisicao.boleto.data_emissao = DateTime.Now.ToString("yyyy-MM-dd");
@@ -228,48 +234,48 @@ namespace Boleto.Application.Bradesco
         {
             var conditions = new Dictionary<string, bool>
             {
-                   {"Campo obrigatório não preenchido!", 
-                !RequiredFields(requisicao)}, 
+                   {"Campo obrigatório não preenchido!",
+                !RequiredFields(requisicao)},
                    {"Alguma data está inválida!",
-                !DateFields(requisicao)}, 
+                !DateFields(requisicao)},
                    {"MerchantId deve conter 9 caracteres!",
-                requisicao.merchant_id.Length != 9}, 
+                requisicao.merchant_id.Length != 9},
                    {"Meio de pagamento deve ser '300'!",
-                requisicao.meio_pagamento != "300"}, 
+                requisicao.meio_pagamento != "300"},
                    {"Numero do pedido deve conter no máximo 27 caracteres!",
-                requisicao.pedido.numero.Length > 27}, 
+                requisicao.pedido.numero.Length > 27},
                    {"Valor do pedido deve conter no máximo 13 caracteres!",
-                requisicao.pedido.valor.Length > 13}, 
+                requisicao.pedido.valor.Length > 13},
                    {"Descrição do pedido deve conter no máximo 255 caracteres!",
-                requisicao.pedido.descricao.Length > 255}, 
+                requisicao.pedido.descricao.Length > 255},
                    {"Nome do comprador deve conter no máximo 40 caracteres!",
-                requisicao.comprador.nome.Length > 40}, 
+                requisicao.comprador.nome.Length > 40},
                    {"Documento do comprador deve conter entre 11 e 14 caracteres!",
-                requisicao.comprador.documento.Length < 11 || requisicao.comprador.documento.Length > 14}, 
+                requisicao.comprador.documento.Length < 11 || requisicao.comprador.documento.Length > 14},
                    {"IP do comprador deve conter entre 9 e 50 caracteres!",
-                !string.IsNullOrEmpty(requisicao.comprador.ip) && (requisicao.comprador.ip.Length < 9 || requisicao.comprador.ip.Length > 50)}, 
+                !string.IsNullOrEmpty(requisicao.comprador.ip) && (requisicao.comprador.ip.Length < 9 || requisicao.comprador.ip.Length > 50)},
                    {"User Agent do comprador deve conter no máximo 255 caracteres!",
-                !string.IsNullOrEmpty(requisicao.comprador.user_agent) && requisicao.comprador.user_agent.Length > 255}, 
+                !string.IsNullOrEmpty(requisicao.comprador.user_agent) && requisicao.comprador.user_agent.Length > 255},
                    {"CEP do comprador deve conter 8 caracteres!",
-                requisicao.comprador.endereco.cep.Length != 8}, 
+                requisicao.comprador.endereco.cep.Length != 8},
                    {"Logradouro do comprador deve conter no máximo 70 caracteres!",
-                requisicao.comprador.endereco.logradouro.Length > 70}, 
+                requisicao.comprador.endereco.logradouro.Length > 70},
                    {"Numero do Endereço comprador deve conter no máximo 10 caracteres!",
-                requisicao.comprador.endereco.numero.Length > 10}, 
+                requisicao.comprador.endereco.numero.Length > 10},
                    {"Complemento do Endereço do comprador deve conter no máximo 20 caracteres!",
-                !string.IsNullOrEmpty(requisicao.comprador.endereco.complemento) && requisicao.comprador.endereco.complemento.Length > 20}, 
+                !string.IsNullOrEmpty(requisicao.comprador.endereco.complemento) && requisicao.comprador.endereco.complemento.Length > 20},
                    {"Bairro do comprador deve conter no máximo 50 caracteres!",
-                requisicao.comprador.endereco.bairro.Length > 50}, 
+                requisicao.comprador.endereco.bairro.Length > 50},
                    {"Cidade do comprador deve conter no máximo 50 caracteres!",
-                requisicao.comprador.endereco.cidade.Length > 50}, 
+                requisicao.comprador.endereco.cidade.Length > 50},
                    {"UF do comprador deve conter 2 caracteres!",
-                requisicao.comprador.endereco.uf.Length != 2}, 
+                requisicao.comprador.endereco.uf.Length != 2},
                    {"Beneficiário do boleto deve conter no máximo 150 caracteres!",
-                requisicao.boleto.beneficiario.Length > 150}, 
+                requisicao.boleto.beneficiario.Length > 150},
                    {"Nosso número deve conter 11 caracteres!",
-                requisicao.boleto.nosso_numero.Length != 11}, 
+                requisicao.boleto.nosso_numero.Length != 11},
                    {"Carteira deve conter 2 caracteres!",
-                requisicao.boleto.carteira.Length != 2}, 
+                requisicao.boleto.carteira.Length != 2},
                    {"Data de emissão deve conter 10 caracteres!",
                 requisicao.boleto.data_emissao.Length != 10},
                    {"Data de vencimento deve conter 10 caracteres!",
@@ -277,71 +283,71 @@ namespace Boleto.Application.Bradesco
                    {"Valor do título deve conter no máximo 13 caracteres!",
                 requisicao.boleto.valor_titulo.Length > 13},
                    {"URL do logotipo deve conter no máximo 255 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.url_logotipo) && requisicao.boleto.url_logotipo.Length > 255}, 
+                !string.IsNullOrEmpty(requisicao.boleto.url_logotipo) && requisicao.boleto.url_logotipo.Length > 255},
                    {"Mensagem cabeçalho deve conter no máximo 255 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.mensagem_cabecalho) && requisicao.boleto.mensagem_cabecalho.Length > 255}, 
+                !string.IsNullOrEmpty(requisicao.boleto.mensagem_cabecalho) && requisicao.boleto.mensagem_cabecalho.Length > 255},
                    {"Tipo renderização deve conter no máximo 1 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.tipo_renderizacao) && requisicao.boleto.tipo_renderizacao.Length > 1}, 
+                !string.IsNullOrEmpty(requisicao.boleto.tipo_renderizacao) && requisicao.boleto.tipo_renderizacao.Length > 1},
                    {"Instrução linha 1 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_1) && requisicao.boleto.instrucoes.instrucao_linha_1.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_1) && requisicao.boleto.instrucoes.instrucao_linha_1.Length > 60},
                    {"Instrução linha 2 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_2) && requisicao.boleto.instrucoes.instrucao_linha_2.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_2) && requisicao.boleto.instrucoes.instrucao_linha_2.Length > 60},
                    {"Instrução linha 3 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_3) && requisicao.boleto.instrucoes.instrucao_linha_3.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_3) && requisicao.boleto.instrucoes.instrucao_linha_3.Length > 60},
                    {"Instrução linha 4 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_4) && requisicao.boleto.instrucoes.instrucao_linha_4.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_4) && requisicao.boleto.instrucoes.instrucao_linha_4.Length > 60},
                    {"Instrução linha 5 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_5) && requisicao.boleto.instrucoes.instrucao_linha_5.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_5) && requisicao.boleto.instrucoes.instrucao_linha_5.Length > 60},
                    {"Instrução linha 6 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_6) && requisicao.boleto.instrucoes.instrucao_linha_6.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_6) && requisicao.boleto.instrucoes.instrucao_linha_6.Length > 60},
                    {"Instrução linha 7 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_7) && requisicao.boleto.instrucoes.instrucao_linha_7.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_7) && requisicao.boleto.instrucoes.instrucao_linha_7.Length > 60},
                    {"Instrução linha 8 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_8) && requisicao.boleto.instrucoes.instrucao_linha_8.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_8) && requisicao.boleto.instrucoes.instrucao_linha_8.Length > 60},
                    {"Instrução linha 9 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_9) && requisicao.boleto.instrucoes.instrucao_linha_9.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_9) && requisicao.boleto.instrucoes.instrucao_linha_9.Length > 60},
                    {"Instrução linha 10 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_10) && requisicao.boleto.instrucoes.instrucao_linha_10.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_10) && requisicao.boleto.instrucoes.instrucao_linha_10.Length > 60},
                    {"Instrução linha 11 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_11) && requisicao.boleto.instrucoes.instrucao_linha_11.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_11) && requisicao.boleto.instrucoes.instrucao_linha_11.Length > 60},
                    {"Instrução linha 12 deve conter no máximo 60 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_12) && requisicao.boleto.instrucoes.instrucao_linha_12.Length > 60}, 
+                !string.IsNullOrEmpty(requisicao.boleto.instrucoes.instrucao_linha_12) && requisicao.boleto.instrucoes.instrucao_linha_12.Length > 60},
                    {"Registro, Agencia pagador, deve conter no máximo 5 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.agencia_pagador) && requisicao.boleto.registro.agencia_pagador.Length > 5}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.agencia_pagador) && requisicao.boleto.registro.agencia_pagador.Length > 5},
                    {"Registro, Razão conta pagador, deve conter no máximo 5 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.razao_conta_pagador) && requisicao.boleto.registro.razao_conta_pagador.Length > 5}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.razao_conta_pagador) && requisicao.boleto.registro.razao_conta_pagador.Length > 5},
                    {"Registro, Conta pagador, deve conter no máximo 8 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.conta_pagador) && requisicao.boleto.registro.conta_pagador.Length > 8}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.conta_pagador) && requisicao.boleto.registro.conta_pagador.Length > 8},
                    {"Registro, Controle participante, deve conter no máximo 25 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.controle_participante) && requisicao.boleto.registro.controle_participante.Length > 25}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.controle_participante) && requisicao.boleto.registro.controle_participante.Length > 25},
                    {"Registro, Valor percentual multa, deve conter no máximo 4 caracteres!",
-                requisicao.boleto.registro.valor_percentual_multa > 0 && requisicao.boleto.registro.valor_percentual_multa.ToString().Length > 4}, 
+                requisicao.boleto.registro.valor_percentual_multa > 0 && requisicao.boleto.registro.valor_percentual_multa.ToString().Length > 4},
                    {"Registro, Valor desconto bonificação, deve conter no máximo 10 caracteres!",
-                requisicao.boleto.registro.valor_desconto_bonificacao > 0 && requisicao.boleto.registro.valor_percentual_multa.ToString().Length > 10}, 
+                requisicao.boleto.registro.valor_desconto_bonificacao > 0 && requisicao.boleto.registro.valor_percentual_multa.ToString().Length > 10},
                    {"Registro, Endereço débito automático, deve conter no máximo 1 caracter!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.endereco_debito_automatico) && requisicao.boleto.registro.endereco_debito_automatico.Length > 1}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.endereco_debito_automatico) && requisicao.boleto.registro.endereco_debito_automatico.Length > 1},
                    {"Registro, Tipo ocorrência, deve conter no máximo 3 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.tipo_ocorrencia) && requisicao.boleto.registro.tipo_ocorrencia.Length > 3}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.tipo_ocorrencia) && requisicao.boleto.registro.tipo_ocorrencia.Length > 3},
                    {"Registro, Espécie título, deve conter no máximo 2 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.especie_titulo) && requisicao.boleto.registro.especie_titulo.Length > 2}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.especie_titulo) && requisicao.boleto.registro.especie_titulo.Length > 2},
                    {"Registro, Primeira instrução, deve conter no máximo 2 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.primeira_instrucao) && requisicao.boleto.registro.primeira_instrucao.Length > 2}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.primeira_instrucao) && requisicao.boleto.registro.primeira_instrucao.Length > 2},
                    {"Registro, Segunda instrução, deve conter no máximo 2 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.segunda_instrucao) && requisicao.boleto.registro.segunda_instrucao.Length > 2}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.segunda_instrucao) && requisicao.boleto.registro.segunda_instrucao.Length > 2},
                    {"Registro, Valor juros mora, deve conter no máximo 13 caracteres!",
-                requisicao.boleto.registro.valor_juros_mora > 0 && requisicao.boleto.registro.valor_juros_mora.ToString().Length > 13}, 
+                requisicao.boleto.registro.valor_juros_mora > 0 && requisicao.boleto.registro.valor_juros_mora.ToString().Length > 13},
                    {"Registro, Data limite concessão desconto, deve conter no máximo 10 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.data_limite_concessao_desconto) && requisicao.boleto.registro.segunda_instrucao.Length > 10}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.data_limite_concessao_desconto) && requisicao.boleto.registro.segunda_instrucao.Length > 10},
                    {"Registro, Valor desconto, deve conter no máximo 13 caracteres!",
-                requisicao.boleto.registro.valor_desconto > 0 && requisicao.boleto.registro.valor_desconto.ToString().Length > 13}, 
+                requisicao.boleto.registro.valor_desconto > 0 && requisicao.boleto.registro.valor_desconto.ToString().Length > 13},
                    {"Registro, Valor IOF, deve conter no máximo 13 caracteres!",
-                requisicao.boleto.registro.valor_iof > 0 && requisicao.boleto.registro.valor_iof.ToString().Length > 13}, 
+                requisicao.boleto.registro.valor_iof > 0 && requisicao.boleto.registro.valor_iof.ToString().Length > 13},
                    {"Registro, Valor abatimento, deve conter no máximo 13 caracteres!",
-                requisicao.boleto.registro.valor_abatimento > 0 && requisicao.boleto.registro.valor_abatimento.ToString().Length > 13}, 
+                requisicao.boleto.registro.valor_abatimento > 0 && requisicao.boleto.registro.valor_abatimento.ToString().Length > 13},
                    {"Registro, Tipo inscrição pagador, deve conter no máximo 2 caracteres!",
-                !string.IsNullOrEmpty(requisicao.boleto.registro.tipo_inscricao_pagador) && requisicao.boleto.registro.tipo_inscricao_pagador.Length > 2}, 
+                !string.IsNullOrEmpty(requisicao.boleto.registro.tipo_inscricao_pagador) && requisicao.boleto.registro.tipo_inscricao_pagador.Length > 2},
                    {"Token deve conter no máximo 256 caracteres!",
-                requisicao.token_request_confirmacao_pagamento.Length > 256}, 
+                requisicao.token_request_confirmacao_pagamento.Length > 256},
             };
 
             var invalidConditions = conditions.Where(condition => condition.Value).ToList();

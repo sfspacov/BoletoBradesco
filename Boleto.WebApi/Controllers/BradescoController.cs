@@ -3,18 +3,23 @@ using System.Net.Http;
 using System.Web.Http;
 using Boleto.Application.Bradesco;
 using Boleto.Infra.Security;
-using Boleto.Infra.DTO;
+using Boleto.Domain.Entidades;
+using Boleto.Domain.Application;
 
 namespace Boleto.WebApi.Controllers
 {
     public class BradescoController : ApiController
     {
-        private readonly BradescoApplication _bradescoApplication = new BradescoApplication();
+        private readonly IBradescoApplication _bradescoApplication;
 
+        public BradescoController()
+        {
+            _bradescoApplication = new BradescoApplication();
+        }
         //método de teste, é executado automaticamente ao rodar o sistema
         [HttpGet]
         public string Index()
-        {            
+        {
             return "ok";
         }
 
@@ -39,11 +44,11 @@ namespace Boleto.WebApi.Controllers
         [FilterIp(
             ConfigurationKeyAllowedSingleIPs = "AllowedAdminSingleIPs",
             ConfigurationKeyAllowedMaskedIPs = "AllowedAdminMaskedIPs",
-             ConfigurationKeyDeniedSingleIPs = "DeniedAdminSingleIPs",
+            ConfigurationKeyDeniedSingleIPs = "DeniedAdminSingleIPs",
             ConfigurationKeyDeniedMaskedIPs = "DeniedAdminMaskedIPs")]
         public string GetUrlBoleto(string orderId)
         {
             return _bradescoApplication.GetUrlBoleto(orderId);
-        }        
+        }
     }
 }

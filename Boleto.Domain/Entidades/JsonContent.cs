@@ -1,6 +1,4 @@
-﻿using Boleto.Infra.DTO;
-
-namespace Boleto.Application.Model
+﻿namespace Boleto.Domain.Entidades
 {
     public class JsonContent
     {

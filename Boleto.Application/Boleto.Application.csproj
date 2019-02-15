@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Boleto.Application</RootNamespace>
     <AssemblyName>Boleto.Application</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,17 +55,12 @@
   <ItemGroup>
     <Compile Include="Bradesco\BradescoApplication.cs" />
     <Compile Include="Bradesco\HttpRequest.cs" />
-    <Compile Include="Model\JsonContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Boleto.Domain\Boleto.Domain.csproj">
       <Project>{bb2e9be0-dc58-4d98-90cc-6e6be8ab20c7}</Project>
       <Name>Boleto.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Boleto.DTO\Boleto.DTO.csproj">
-      <Project>{481fbb8d-08df-4ddf-947e-5cf9b364001a}</Project>
-      <Name>Boleto.DTO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Boleto.Infra\Boleto.Infra.csproj">
       <Project>{c2703fa2-4311-4973-abe2-ea90a8b4d6fc}</Project>

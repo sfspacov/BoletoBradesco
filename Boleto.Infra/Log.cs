@@ -28,7 +28,7 @@ namespace Boleto.Infra
             var finalMessage = string.Format("{0}{1}", beginMessage, message);
 
             var logWriter = !File.Exists(fullPath) ? File.CreateText(fullPath) : File.AppendText(fullPath);
-            logWriter.WriteLineAsync(finalMessage);
+            logWriter.WriteLine(finalMessage);
             logWriter.Close();
             logWriter.Dispose();
         }

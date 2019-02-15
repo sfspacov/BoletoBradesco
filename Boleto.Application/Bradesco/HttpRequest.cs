@@ -4,11 +4,12 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
-using Boleto.Infra.DTO;
+using Boleto.Domain.Entidades;
+using Boleto.Domain.Application;
 
 namespace Boleto.Application.Bradesco
 {
-    internal class HttpRequest
+    internal class HttpRequest : IHttpRequest
     {
         public Resposta Post(Requisicao serviceRequest)
         {

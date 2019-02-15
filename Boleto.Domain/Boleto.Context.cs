@@ -24,6 +24,6 @@ namespace Boleto.Domain
         {
         }
     
-        public DbSet<BradescoIntegration> BradescoIntegration { get; set; }
+        public IDbSet<BradescoIntegration> BradescoIntegration { get; set; }
     }
 }
