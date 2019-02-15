@@ -3,7 +3,7 @@ WebApi que faz integração com Servidores do Bradesco para gerar boleto bancár
 <br><h2>CONFIGURAÇÕES:</h2>
 <ul>
 	<li>
-		Rodar o script <b>https://raw.githubusercontent.com/sfspacov/BoletoBradescoDotNetFramework/master/scripts/createDb-createTable-insertFakeDate.sql</b> na sua base de dados.
+		Rodar o script <b>/scripts/createDb-createTable-insertFakeDate.sql</b> na sua base de dados.
 	</li>
 	<li>
 		Nos arquivos <b>Boleto.WebApi/Web.config</b> e <b>Boleto.Tests/App.config</b> alterar:<br>
