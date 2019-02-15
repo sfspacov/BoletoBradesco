@@ -39,7 +39,6 @@ namespace LevelUp.Boleto.Test
         [TestMethod]
         public void Check_RequisicaoOk_True()
         {
-            //Base de produção
             var result = _bradescoApplication.Check("74976085", "65af91aa-631b-48f9-a552-29ef33e837ef");
             Assert.AreEqual(true, result);
         }
