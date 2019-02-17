@@ -174,7 +174,6 @@ namespace Boleto.Application.Bradesco
             requisicao.token_request_confirmacao_pagamento = Guid.NewGuid().ToString();
             requisicao.meio_pagamento = "300";
 
-            requisicao.boleto.beneficiario = requisicao.boleto.beneficiario ?? "NOME DA SUA EMPRESA";
             requisicao.boleto.carteira = "26";
             requisicao.boleto.nosso_numero = requisicao.pedido.numero.PadRight(11, '0');
             requisicao.boleto.data_emissao = DateTime.Now.ToString("yyyy-MM-dd");
@@ -213,7 +212,7 @@ namespace Boleto.Application.Bradesco
             requisicao.comprador.endereco.cep = requisicao.comprador.endereco.cep.Replace("-", "");
             requisicao.comprador.documento = requisicao.comprador.documento.Replace(".", "").Replace("-", "").Replace("/", "");
             requisicao.pedido.valor = requisicao.pedido.valor.Replace(".", "").Replace(",", "");
-            requisicao.boleto.valor_titulo = requisicao.boleto.valor_titulo.Replace(".", "").Replace(",", "");
+            requisicao.boleto.valor_titulo = requisicao.pedido.valor;
         }
 
         private static BradescoIntegration MapperToEntity(Requisicao requisicao, Resposta resposta = null)

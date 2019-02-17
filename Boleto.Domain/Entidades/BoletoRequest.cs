@@ -1,7 +1,10 @@
-﻿namespace Boleto.Domain.Entidades
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Boleto.Domain.Entidades
 {
     public class BoletoRequest
     {
+        [Required]
         public string beneficiario { get; set; }
         public string carteira { get; set; }
         public string data_emissao { get; set; }

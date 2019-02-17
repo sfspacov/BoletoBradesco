@@ -5,6 +5,8 @@ using Boleto.Application.Bradesco;
 using Boleto.Infra.Security;
 using Boleto.Domain.Entidades;
 using Boleto.Domain.Application;
+using System;
+using Boleto.Infra;
 
 namespace Boleto.WebApi.Controllers
 {
@@ -36,7 +38,13 @@ namespace Boleto.WebApi.Controllers
         [HttpPost]
         public Resposta Generate([FromBody]Requisicao requisicao)
         {
-            return _bradescoApplication.Generate(requisicao);
+            if (ModelState.IsValid)
+                return _bradescoApplication.Generate(requisicao);
+
+            var errorMsg = "ERRO! Campos obrigatórios não preenchidos. Verifique quais campos do objeto requisicao possuem o atributo [Required] mas não estão preenchidos.";
+            Log.Write(errorMsg);
+
+            throw new Exception(errorMsg);
         }
 
         // GET bradesco/GetUrlBoleto?orderId=
